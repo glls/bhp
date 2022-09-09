@@ -8,17 +8,19 @@ import win32event
 import win32service
 import win32serviceutil
 
-SRCDIR = 'C:\\Users\\tim\\work'
-TGTDIR = 'C:\\Windows\\TEMP'
+SRCDIR = "C:\\Users\\tim\\work"
+TGTDIR = "C:\\Windows\\TEMP"
+
 
 class BHServerSvc(win32serviceutil.ServiceFramework):
     _svc_name_ = "BlackHatService"
     _svc_display_name_ = "Black Hat Service"
-    _svc_description_ = ("Executes VBScripts at regular intervals." +
-                        " What could possibly go wrong?")
+    _svc_description_ = (
+        "Executes VBScripts at regular intervals." + " What could possibly go wrong?"
+    )
 
     def __init__(self, args):
-        self.vbs = os.path.join(TGTDIR, 'bhservice_task.vbs')
+        self.vbs = os.path.join(TGTDIR, "bhservice_task.vbs")
         self.timeout = 1000 * 60
 
         win32serviceutil.ServiceFramework.__init__(self, args)
@@ -38,13 +40,14 @@ class BHServerSvc(win32serviceutil.ServiceFramework):
             if ret_code == win32event.WAIT_OBJECT_0:
                 servicemanager.LogInfoMsg("Service is stopping")
                 break
-            
-            src = os.path.join(SRCDIR, 'bhservice_task.vbs')
+
+            src = os.path.join(SRCDIR, "bhservice_task.vbs")
             shutil.copy(src, self.vbs)
             subprocess.call("cscript.exe %s" % self.vbs, shell=False)
             os.unlink(self.vbs)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     if len(sys.argv) == 1:
         servicemanager.Initialize()
         servicemanager.PrepareToHostSingle(BHServerSvc)

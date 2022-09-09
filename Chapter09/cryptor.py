@@ -12,15 +12,15 @@ def generate():
     private_key = new_key.exportKey()
     public_key = new_key.publickey().exportKey()
 
-    with open('key.pri', 'wb') as f:
+    with open("key.pri", "wb") as f:
         f.write(private_key)
 
-    with open('key.pub', 'wb') as f:
+    with open("key.pub", "wb") as f:
         f.write(public_key)
 
 
 def get_rsa_cipher(keytype):
-    with open(f'key.{keytype}') as f:
+    with open(f"key.{keytype}") as f:
         key = f.read()
     rsakey = RSA.importKey(key)
     return (PKCS1_OAEP.new(rsakey), rsakey.size_in_bytes())
@@ -33,17 +33,17 @@ def encrypt(plaintext):
     cipher_aes = AES.new(session_key, AES.MODE_EAX)
     ciphertext, tag = cipher_aes.encrypt_and_digest(compressed_text)
 
-    cipher_rsa, _ = get_rsa_cipher('pub')
+    cipher_rsa, _ = get_rsa_cipher("pub")
     encrypted_session_key = cipher_rsa.encrypt(session_key)
 
     msg_payload = encrypted_session_key + cipher_aes.nonce + tag + ciphertext
     encrypted = base64.encodebytes(msg_payload)
-    return(encrypted)
+    return encrypted
 
 
 def decrypt(encrypted):
     encrypted_bytes = BytesIO(base64.decodebytes(encrypted))
-    cipher_rsa, keysize_in_bytes = get_rsa_cipher('pri')
+    cipher_rsa, keysize_in_bytes = get_rsa_cipher("pri")
 
     encrypted_session_key = encrypted_bytes.read(keysize_in_bytes)
     nonce = encrypted_bytes.read(16)
@@ -58,6 +58,6 @@ def decrypt(encrypted):
     return plaintext
 
 
-if __name__ == '__main__':
-    plaintext = b'hey there you.'
+if __name__ == "__main__":
+    plaintext = b"hey there you."
     print(decrypt(encrypt(plaintext)))

