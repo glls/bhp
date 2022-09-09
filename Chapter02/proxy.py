@@ -1,9 +1,10 @@
+#!python3
+
 import sys
 import socket
 import threading
 
-HEX_FILTER = ''.join(
-    [(len(repr(chr(i))) == 3) and chr(i) or '.' for i in range(256)])
+HEX_FILTER = "".join([(len(repr(chr(i))) == 3) and chr(i) or "." for i in range(256)])
 
 
 def hexdump(src, length=16, show=True):
@@ -11,11 +12,11 @@ def hexdump(src, length=16, show=True):
         src = src.decode()
     results = list()
     for i in range(0, len(src), length):
-        word = str(src[i:i+length])
+        word = str(src[i : i + length])
         printable = word.translate(HEX_FILTER)
-        hexa = ' '.join([f'{ord(c):02X}' for c in word])
-        hexwidth = length*3
-        results.append(f'{i:04x}  {hexa:<{hexwidth}}  {printable}')
+        hexa = " ".join([f"{ord(c):02X}" for c in word])
+        hexwidth = length * 3
+        results.append(f"{i:04x}  {hexa:<{hexwidth}}  {printable}")
     if show:
         for line in results:
             print(line)
@@ -34,7 +35,7 @@ def receive_from(connection):
 
             buffer += data
     except Exception as e:
-        print('error ', e)
+        print("error ", e)
         pass
 
     return buffer
@@ -105,21 +106,21 @@ def server_loop(local_host, local_port, remote_host, remote_port, receive_first)
     while True:
         client_socket, addr = server.accept()
         print("> Received incoming connection from %s:%d" % (addr[0], addr[1]))
-        
+
         proxy_thread = threading.Thread(
             target=proxy_handler,
-            args=(client_socket, remote_host,
-                  remote_port, receive_first))
+            args=(client_socket, remote_host, remote_port, receive_first),
+        )
         proxy_thread.start()
 
 
 def main():
     if len(sys.argv[1:]) != 5:
-        print("Usage: ./proxy.py [localhost] [localport]", end='')
+        print("Usage: ./proxy.py [localhost] [localport]", end="")
         print("[remotehost] [remoteport] [receive_first]")
         print("Example: ./proxy.py 127.0.0.1 9000 10.12.132.1 9000 True")
         sys.exit(0)
-    
+
     local_host = sys.argv[1]
     local_port = int(sys.argv[2])
 
@@ -133,9 +134,8 @@ def main():
     else:
         receive_first = False
 
-    server_loop(local_host, local_port,
-                remote_host, remote_port, receive_first)
+    server_loop(local_host, local_port, remote_host, remote_port, receive_first)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
